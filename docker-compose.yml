@@ -1,0 +1,53 @@
+version: '3.8'
+
+volumes:
+
+  database_volume:
+  media_volume:
+  static_volume:
+
+services:
+
+  redis_picasso:
+    image: redis:7.2.1-alpine
+
+  database_picasso:
+    container_name: database_picasso
+    env_file:
+      - app/.env
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - database_volume:/var/lib/postgresql/data/
+
+  backend_picasso:
+    build:
+      context: app/.
+      dockerfile: Dockerfile
+    container_name: backend_picasso
+    command: sh -c "
+      python manage.py makemigrations &&
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn --bind 0.0.0.0:8000 src.wsgi --reload"
+    depends_on:
+      - database_picasso
+    env_file:
+      - app/.env
+    restart: on-failure
+    volumes:
+      - ./app:/app
+      - static_volume:/app/static/
+
+  gateway_picasso:
+    container_name: gateway_picasso
+    depends_on:
+      - backend_picasso
+    image: nginx:1.21.3-alpine
+    ports:
+      - "8000:8000"
+    restart: on-failure
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf
+      - media_volume:/var/html/media/
+      - static_volume:/var/html/static/
