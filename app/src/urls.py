@@ -2,10 +2,13 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
-from src.auth.urls import urlpatterns as urlpatterns_auth
+from src.authentication.urls import urlpatterns as urlpatterns_auth
+from src.content.urls import urlpatterns as urlpatterns_content
+
 
 urlpatterns_api = [
     path('auth/', include(urlpatterns_auth)),
+    path('content/', include(urlpatterns_content)),
 ]
 
 urlpatterns_docs = [
