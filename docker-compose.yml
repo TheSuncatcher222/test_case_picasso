@@ -29,6 +29,7 @@ services:
       python manage.py makemigrations &&
       python manage.py migrate &&
       python manage.py collectstatic --noinput &&
+      celery --app=src worker -l INFO &
       gunicorn --bind 0.0.0.0:8000 src.wsgi --reload"
     depends_on:
       - database_picasso
@@ -38,6 +39,7 @@ services:
     volumes:
       - ./app:/app
       - static_volume:/app/static/
+      - media_volume:/app/media/
 
   gateway_picasso:
     container_name: gateway_picasso
