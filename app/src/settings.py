@@ -154,7 +154,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-SECRET_KEY = 'django-insecure-17ypqjhfe*32e8l%wl7-y-up!iko(r1k063v+2uadi)=b0yse%'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
